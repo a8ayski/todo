@@ -1,0 +1,14 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.animated-hover {
+  transition: transform 0.2s ease-in-out;
+}
+.animated-hover:hover {
+  transform: scale(1.05);
+}
+
+.fade-strike {
+  transition: text-decoration 0.3s ease;
+}
