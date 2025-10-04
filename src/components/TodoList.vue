@@ -14,8 +14,8 @@
         type="date"
         placeholder="Deadline"
         class="w-full"
-        format="yyyy-MM-DD"
-        value-format="yyyy-MM-DD" 
+        format="yyyy/MM/dd"
+        value-format="yyyy-MM-dd" 
       ></el-date-picker>
       <el-button type="primary" @click="handleAdd" class="w-full animated-hover">Add Task</el-button>
     </div>
@@ -34,6 +34,7 @@
     </div>
 
     <el-drawer
+    :before-close=" closeDetail"
       title="Task Details"
       :visible.sync="detailDrawerVisible"
       direction="rtl"
