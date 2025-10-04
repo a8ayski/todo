@@ -1,5 +1,5 @@
 <template>
-  <div v-if="todo" class="max-w-md mx-auto bg-white rounded-lg shadow-lg p-6">
+  <div v-if="todo" class="p-4">
     <h2 class="text-2xl font-bold text-vue-green mb-4">Details for: {{ todo.text }}</h2>
     <div class="space-y-2 mb-6">
       <p><strong>Creator:</strong> {{ todo.creator }}</p>
@@ -16,31 +16,26 @@
         </span>
       </p>
     </div>
-    <el-button @click="backToList" type="info" class="w-full animated-hover">Back to List</el-button>
+    <el-button @click="$emit('close')" type="info" class="w-full animated-hover">Close</el-button>
   </div>
   <div v-else class="text-center text-gray-500 py-8">
     <p class="text-xl">Todo not found :(</p>
-    <el-button @click="backToList" type="primary" class="mt-4">Go Back</el-button>
+    <el-button @click="$emit('close')" type="primary" class="mt-4">Close</el-button>
   </div>
 </template>
 
 <script>
 export default {
+  props: ['todo'],
   computed: {
-    todo() {
-      const id = parseInt(this.$route.params.id);
-      return this.$store.getters.allTodos.find(t => t.id === id);
-    },
     isOverdue() {
       if (!this.todo || !this.todo.deadline) return false;
+      const today = new Date();
       const deadline = new Date(this.todo.deadline);
-      return deadline < new Date();
+      return deadline < today && !this.todo.done;
     },
   },
   methods: {
-    backToList() {
-      this.$router.push('/');
-    },
     formatDate(dateStr) {
       if (!dateStr) return '';
       const [year, month, day] = dateStr.split('-');
@@ -48,7 +43,7 @@ export default {
     },
   },
   mounted() {
-    console.log('Detail mounted for id:', this.$route.params.id);
+    console.log('TodoDetail opened for todo:', this.todo);
   },
 };
 </script>

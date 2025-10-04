@@ -1,7 +1,6 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 import TodoList from '../components/TodoList.vue';
-import TodoDetail from '../components/TodoDetail.vue';
 
 Vue.use(VueRouter);
 
@@ -14,7 +13,12 @@ const routes = [
   {
     path: '/todo/:id',
     name: 'TodoDetail',
-    component: TodoDetail,
+    component: TodoList,
+    props: true,
+  },
+  {
+    path: '*',
+    redirect: '/',
   },
 ];
 

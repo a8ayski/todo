@@ -5,32 +5,32 @@ Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
-    todos: [
-      { id: 1, text: 'Купить молоко', done: false, creator: 'Cristiano Ronaldo', deadline: '2025-10-10' },
-      { id: 2, text: 'Купить мясо', done: true, creator: 'Leo Messi', deadline: '2025-10-05' },
-    ],
-    nextId: 3,
+    todos: JSON.parse(localStorage.getItem('todos')) || [],
+    nextId: 1,
   },
   mutations: {
     ADD_TODO(state, { text, creator, deadline }) {
-      state.todos.push({ id: state.nextId++, text, done: false, creator, deadline });
+      const maxId = state.todos.length > 0 ? Math.max(...state.todos.map(t => t.id)) : 0;
+      state.todos.push({ id: maxId + 1, text, done: false, creator, deadline });
+      localStorage.setItem('todos', JSON.stringify(state.todos));
     },
     DELETE_TODO(state, id) {
       state.todos = state.todos.filter(todo => todo.id !== id);
+      localStorage.setItem('todos', JSON.stringify(state.todos));
     },
     TOGGLE_TODO(state, id) {
       const todo = state.todos.find(t => t.id === id);
       if (todo) {
         todo.done = !todo.done;
+        localStorage.setItem('todos', JSON.stringify(state.todos));
       }
     },
   },
   getters: {
     allTodos: state => state.todos,
     doneTodos: state => state.todos.filter(todo => todo.done),
-
     overdueTodos: state => {
-      const today = new Date('2025-10-02');
+      const today = new Date();
       return state.todos.filter(todo => !todo.done && todo.deadline && new Date(todo.deadline) < today);
     },
   },

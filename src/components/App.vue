@@ -4,20 +4,19 @@
       <header
         class="bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg shadow-lg p-6 mb-8 flex justify-between items-center"
       >
-        <h1 class="text-3xl font-bold">ToDo List</h1>
-
+        <h1 class="text-3xl font-bold">My ToDo List (Vue 2! ✨)</h1>
         <el-button type="text" @click="drawerVisible = true" class="text-white hover:text-gray-200"
           >Filters 📊</el-button
         >
       </header>
       <main>
-        <router-view :filter="currentFilter"></router-view>
+        <router-view></router-view>
       </main>
 
       <el-drawer
         title="Filters & Stats"
         :visible.sync="drawerVisible"
-        direction="ltr"
+        direction="rtl"
         :wrapperClosable="true"
         size="30%"
       >
@@ -58,6 +57,10 @@
               >Add Quick</el-button
             >
           </div>
+
+          <div class="mt-6">
+            <el-button @click="drawerVisible = false" type="info" class="w-full">Close</el-button>
+          </div>
         </div>
       </el-drawer>
     </div>
@@ -94,7 +97,6 @@ export default {
   methods: {
     setFilter(value) {
       this.currentFilter = value;
-      this.drawerVisible = false;
     },
     quickAdd() {
       if (this.quickText.trim()) {
