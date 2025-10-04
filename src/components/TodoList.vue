@@ -15,7 +15,7 @@
         placeholder="Deadline"
         class="w-full"
         format="yyyy-MM-DD"
-        value-format="yyyy-MM-DD"
+        value-format="yyyy-MM-DD" 
       ></el-date-picker>
       <el-button type="primary" @click="handleAdd" class="w-full animated-hover">Add Task</el-button>
     </div>
@@ -90,19 +90,8 @@ export default {
           creator: this.newCreator.trim() || 'Anonymous',
           deadline: this.newDeadline || '',
         });
-      }  
-      let deadlineStr = '';
-      if (this.newDeadline) {
-        deadlineStr = this.newDeadline.format('yyyy-MM-DD');
-        console.log(deadlineStr)
-      }
-      console.log('Before commit: text', this.newTodo, 'creator', this.newCreator, 'deadline', deadlineStr);
-      this.$store.commit('ADD_TODO', {
-        text: this.newTodo,
-        creator: this.newCreator.trim() || 'Anonymous',
-        deadline: deadlineStr,
-      });
-      console.log('After commit: todos', this.$store.state.todos);
+      } 
+   
       this.newTodo = '';
       this.newCreator = '';
       this.newDeadline = null;
