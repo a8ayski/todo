@@ -30,15 +30,15 @@
 
     <div class="space-y-3">
       <el-list>
-        <el-list-item v-for="todo in filteredTodos" :key="todo.id">
+        <el-list-item v-for="todo in todos" :key="todo.id">
           <TodoItem :todo="todo" @toggle="toggleTodo" @delete="deleteTodo" @open-detail="openDetail" />
         </el-list-item>
       </el-list>
-      <p v-if="filteredTodos.length === 0" class="text-center text-gray-500">No tasks 😴</p>
+      <p v-if="todos.length === 0" class="text-center text-gray-500">No tasks 😴</p>
     </div>
 
     <div class="mt-6 text-center">
-      <p class="text-sm font-medium text-gray-600">Tasks: {{ filteredTodos.length }}</p>
+      <p class="text-sm font-medium text-gray-600">Tasks: {{ todos.length }}</p>
     </div>
 
     <el-drawer
@@ -68,20 +68,35 @@ export default {
       newDeadline: null,
       detailDrawerVisible: false,
       selectedTodo: null,
-      filter: 'all',
+         currentFilter: 'all',
+      quickText: '',
+      filters: [
+        { label: 'All', value: 'all' },
+        { label: 'Done', value: 'done' },
+        { label: 'Overdue', value: 'overdue' },
+      ],
     };
   },
   computed: {
-    ...mapGetters(['allTodos']),
-    filteredTodos() {
-      const now = new Date();
-      if (this.filter === 'done') {
-        return this.allTodos.filter(todo => todo.completed);
-      } else if (this.filter === 'overdue') {
-        return this.allTodos.filter(todo => !todo.completed && new Date(todo.deadline) < now);
-      }
-      return this.allTodos;
+   ...mapGetters(['allTodos', 'doneTodos', 'overdueTodos']),
+ stats() {
+      return {
+        total: this.allTodos.length,
+        done: this.doneTodos.length,
+        overdue: this.overdueTodos.length,
+      };
     },
+    todos(filterValue = "all") {
+            if(this.currentFilter == 'done') {
+        return this.doneTodos
+      }
+           if(this.currentFilter == 'overdue') {
+        return this.overdueTodos
+      }
+          if(this.currentFilter == 'all') {
+        return this.allTodos
+      }
+    }
   },
   watch: {
     '$route.params.id'(newId) {
@@ -128,7 +143,17 @@ export default {
       this.selectedTodo = null;
     },
     setFilter(filter) {
-      this.filter = filter;
+      this.currentFilter = filter;
+         if(this.currentFilter == 'done') {
+        return this.todos = this.doneTodos
+      }
+           if(this.currentFilter == 'overdue') {
+        return this.todos = this.overdueTodos
+      }
+          if(this.currentFilter == 'all') {
+        return this.todos = this.AllTodos
+      }
+   
     },
   },
 };
