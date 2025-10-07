@@ -1,29 +1,37 @@
 <template>
   <div class="max-w-md mx-auto bg-white rounded-lg shadow-md p-6">
-    <div class="mb-6 space-y-4">
-      <el-input
-        v-model="newTodo"
-        placeholder="Add new todo..."
-        @keyup.enter="handleAdd"
-        class="w-full"
-        clearable
-      ></el-input>
-      <el-input v-model="newCreator" placeholder="Creator" class="w-full" clearable></el-input>
-      <el-date-picker
-        v-model="newDeadline"
-        type="date"
-        placeholder="Deadline"
-        class="w-full"
-        format="yyyy/MM/dd"
-        value-format="yyyy-MM-dd"
-      ></el-date-picker>
-      <el-button type="primary" @click="handleAdd" class="w-full animated-hover">Add Task</el-button>
-    </div>
+    <el-form ref="todoForm" :model="form" :rules="rules" class="mb-6 space-y-4">
+      <el-form-item prop="newTodo">
+        <el-input
+          v-model="form.newTodo"
+          placeholder="Add new todo..."
+          @keyup.enter="handleAdd"
+          class="w-full"
+          clearable
+        ></el-input>
+      </el-form-item>
+      <el-form-item prop="newCreator">
+        <el-input v-model="form.newCreator" placeholder="Creator" class="w-full" clearable></el-input>
+      </el-form-item>
+      <el-form-item prop="newDeadline">
+        <el-date-picker
+          v-model="form.newDeadline"
+          type="date"
+          placeholder="Deadline"
+          class="w-full"
+          format="yyyy/MM/dd"
+          value-format="yyyy-MM-dd"
+        ></el-date-picker>
+      </el-form-item>
+      <el-form-item>
+        <el-button type="primary" @click="handleAdd" class="w-full animated-hover">Add Task</el-button>
+      </el-form-item>
+    </el-form>
 
     <div class="mb-6 flex justify-around">
-      <el-button :type="filter === 'all' ? 'primary' : 'default'" @click="setFilter('all')"> All </el-button>
-      <el-button :type="filter === 'done' ? 'primary' : 'default'" @click="setFilter('done')"> Done </el-button>
-      <el-button :type="filter === 'overdue' ? 'primary' : 'default'" @click="setFilter('overdue')">
+      <el-button :type="currentFilter === 'all' ? 'primary' : 'default'" @click="setFilter('all')"> All </el-button>
+      <el-button :type="currentFilter === 'done' ? 'primary' : 'default'" @click="setFilter('done')"> Done </el-button>
+      <el-button :type="currentFilter === 'overdue' ? 'primary' : 'default'" @click="setFilter('overdue')">
         Overdue
       </el-button>
     </div>
@@ -63,12 +71,20 @@ export default {
   components: { TodoItem, TodoDetail },
   data() {
     return {
-      newTodo: '',
-      newCreator: '',
-      newDeadline: null,
+      form: {
+        newTodo: '',
+        newCreator: '',
+        newDeadline: null,
+      },
+      rules: {
+        newTodo: [
+          { required: true, message: 'Введите текст задачи!', trigger: 'blur' },
+          { min: 1, message: 'Текст задачи не может быть пустым!', trigger: 'blur' },
+        ],
+      },
       detailDrawerVisible: false,
       selectedTodo: null,
-         currentFilter: 'all',
+      currentFilter: 'all',
       quickText: '',
       filters: [
         { label: 'All', value: 'all' },
@@ -78,25 +94,25 @@ export default {
     };
   },
   computed: {
-   ...mapGetters(['allTodos', 'doneTodos', 'overdueTodos']),
- stats() {
+    ...mapGetters(['allTodos', 'doneTodos', 'overdueTodos']),
+    stats() {
       return {
         total: this.allTodos.length,
         done: this.doneTodos.length,
         overdue: this.overdueTodos.length,
       };
     },
-    todos(filterValue = "all") {
-            if(this.currentFilter == 'done') {
-        return this.doneTodos
+    todos(filterValue = 'all') {
+      if (this.currentFilter == 'done') {
+        return this.doneTodos;
       }
-           if(this.currentFilter == 'overdue') {
-        return this.overdueTodos
+      if (this.currentFilter == 'overdue') {
+        return this.overdueTodos;
       }
-          if(this.currentFilter == 'all') {
-        return this.allTodos
+      if (this.currentFilter == 'all') {
+        return this.allTodos;
       }
-    }
+    },
   },
   watch: {
     '$route.params.id'(newId) {
@@ -111,20 +127,20 @@ export default {
   },
   methods: {
     handleAdd() {
-      if (!this.newTodo.trim()) {
-        this.$message.error('Введите текст задачи!');
-        return;
-      }
-      this.$store.commit('ADD_TODO', {
-        text: this.newTodo,
-        creator: this.newCreator.trim() || 'Anonymous',
-        deadline: this.newDeadline || '',
-      });
+      this.$refs.todoForm.validate(valid => {
+        if (valid) {
+          this.$store.commit('ADD_TODO', {
+            text: this.form.newTodo,
+            creator: this.form.newCreator.trim() || 'Anonymous',
+            deadline: this.form.newDeadline || '',
+          });
 
-      this.newTodo = '';
-      this.newCreator = '';
-      this.newDeadline = null;
-      this.$message.success('Задача добавлена!');
+          this.$refs.todoForm.resetFields();
+          this.$message.success('Задача добавлена!');
+        } else {
+          return false;
+        }
+      });
     },
     deleteTodo(id) {
       this.$store.commit('DELETE_TODO', id);
@@ -144,16 +160,6 @@ export default {
     },
     setFilter(filter) {
       this.currentFilter = filter;
-         if(this.currentFilter == 'done') {
-        return this.todos = this.doneTodos
-      }
-           if(this.currentFilter == 'overdue') {
-        return this.todos = this.overdueTodos
-      }
-          if(this.currentFilter == 'all') {
-        return this.todos = this.AllTodos
-      }
-   
     },
   },
 };
