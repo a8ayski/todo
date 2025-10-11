@@ -7,13 +7,25 @@
       <el-checkbox :checked="todo.done" @change="handleToggle" @click.native.stop class="mr-3"></el-checkbox>
       <span class="flex-1 fade-strike ml-4" :class="{ 'line-through text-gray-400': todo.done }">{{ todo.text }}</span>
     </div>
-    <div class="flex justify-between text-xs text-gray-500 ml-8">
+    <div class="flex justify-between text-xs text-gray-500 ml-8 mb-2">
       <span>By: {{ todo.creator }}</span>
-      <span v-if="todo.deadline" :class="{ 'text-red-500': isOverdue }">
-        Deadline: {{ formatDate(todo.deadline) }}
-      </span>
+      <span v-if="todo.deadline" :class="{ 'text-red-500': isOverdue }">Deadline: {{ formatDate(todo.deadline) }}</span>
     </div>
-    <el-button type="danger" size="mini" @click.stop="remove" class="animated-hover mt-2 self-end">Delete</el-button>
+
+    <div class="flex justify-end items-center space-x-2 ml-8">
+      <i :class="[
+          'el-icon-star-off text-lg text-gray-400 cursor-pointer transition-colors duration-200 hover:text-yellow-400',
+          { 'el-icon-star-on text-lg text-yellow-500': todo.isFavorite }
+        ]"
+        @click.stop="favorited"
+        title="Toggle Favorite"
+      ></i>
+      <i
+        class="el-icon-delete text-lg text-gray-400 cursor-pointer animated-hover hover:text-red-500 hover:fill-red-500"
+        @click.stop="remove"
+        title="Delete Task"
+      ></i>
+    </div>
   </div>
 </template>
 
@@ -40,6 +52,13 @@ export default {
       const [year, month, day] = dateStr.split('-');
       return `${day}.${month}.${year}`;
     },
+    favorited() {
+      this.$emit('favorite', this.todo.id)
+    }
   },
 };
 </script>
+<!-- :class="[
+'el-icon-star-off text-lg text-gray-400 cursor-pointer transition-colors duration-200 hover:text-yellow-400',
+{ 'el-icon-star-on text-lg text-yellow-500': todo.isFavorite },
+]" -->
