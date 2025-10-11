@@ -185,7 +185,6 @@ export default {
     },
   
     importedTodoId() {
-      this.selectedTodo.isFavorite = true;
       return this.selectedTodo.id
     },
     todays() {
